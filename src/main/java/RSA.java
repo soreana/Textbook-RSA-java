@@ -1,9 +1,14 @@
+
+import lombok.Getter;
+
 import java.math.BigInteger;
 import java.util.Random;
 
 public class RSA {
     private static Random r = new Random();
     private final int phiN;
+
+    @Getter
     private int p,q,n,e,d;
 
     public RSA(int p, int q) {
@@ -12,7 +17,7 @@ public class RSA {
         else if ( p == q)
             throw new RuntimeException("You should input two diffrent prime number.");
         else if ( p*q < 256 )
-            throw new RuntimeException("Multiply of inputed numbers should be more that 256");
+            throw new RuntimeException("Multiply of inputed numbers should be more than 256");
 
         this.p = p;
         this.q = q;
