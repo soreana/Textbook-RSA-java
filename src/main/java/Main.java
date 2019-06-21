@@ -1,3 +1,6 @@
+import RSA.RSA;
+import RSA.PrivateKey;
+import RSA.PublicKey;
 import lombok.Cleanup;
 
 import java.io.FileWriter;
@@ -9,16 +12,19 @@ public class Main {
         Scanner console = new Scanner(System.in);
         System.out.println("Please input two prime numbers:");
         try {
-            RSA rsa = new RSA(console.nextInt(),console.nextInt());
-            System.out.println(rsa);
+            PrivateKey pr = RSA.generatePrivateKey(console.nextInt(),console.nextInt());
+            PublicKey pub = RSA.exctractPublicKey(pr);
 
-            @Cleanup FileWriter privateKey = new FileWriter("PRIVATE.key");
-            privateKey.write(rsa.getD() + "\n");
-            privateKey.write(rsa.getN() + "");
+            System.out.println(pr);
+            System.out.println(pub);
 
-            @Cleanup FileWriter publicKey = new FileWriter("PUBLIC.key");
-            publicKey.write(rsa.getE() + "\n");
-            publicKey.write(rsa.getN() + "");
+            @Cleanup FileWriter prFile = new FileWriter("PRIVATE.key");
+            prFile.write(pr.getD() + "\n");
+            prFile.write(pr.getN() + "");
+
+            @Cleanup FileWriter pubFile = new FileWriter("PUBLIC.key");
+            pubFile.write(pub.getE() + "\n");
+            pubFile.write(pub.getN() + "");
 
         }catch (RuntimeException e){
             System.out.println(e.getMessage());
