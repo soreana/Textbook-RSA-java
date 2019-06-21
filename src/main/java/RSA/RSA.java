@@ -43,4 +43,9 @@ public interface RSA {
 
         return true;
     }
+
+    static int encrypt(PublicKey pub, int tmp) {
+        // todo implement this method
+        return tmp;
+    }
 }
