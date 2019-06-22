@@ -5,26 +5,26 @@ import lombok.Getter;
 public class PrivateKeyImp implements PrivateKey {
 
     @Getter
-    private final int n, e, d;
+    private final int d, n, e;
     private final int BLOCK_SIZE;
 
     public PrivateKeyImp(int p, int q) {
+        this.d = RSA.calculateD(p, q);
         this.n = p * q;
         this.e = RSA.calculateE(p, q);
-        this.d = RSA.calculateD(p, q);
         this.BLOCK_SIZE = RSA.blockSize(this.n);
     }
 
-    public PrivateKeyImp(int n, int e, int d){
+    public PrivateKeyImp(int d, int n, int e){
+        this.d = d;
         this.n = n;
         this.e = e;
-        this.d = d;
         this.BLOCK_SIZE = RSA.blockSize(this.n);
     }
 
     @Override
     public String toString() {
-        return String.format("Private key parameters are:\nn: %d, e: %d, d: %d\nBlock size is %d", n, e, d, BLOCK_SIZE);
+        return String.format("Private key parameters are:\nd: %d,n: %d, e: %d\nBlock size is %d", d, n, e, BLOCK_SIZE);
     }
 
     @Override

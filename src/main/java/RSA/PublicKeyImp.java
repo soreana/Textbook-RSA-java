@@ -19,6 +19,6 @@ public class PublicKeyImp implements PublicKey {
 
     @Override
     public String toString() {
-        return String.format("Public key parameters are:\nn: %d, e: %d\nBlock size is %d", n, e, BLOCK_SIZE);
+        return String.format("Public key parameters are:\ne: %d, n: %d\nBlock size is %d", e, n, BLOCK_SIZE);
     }
 }
