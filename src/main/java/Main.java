@@ -26,10 +26,13 @@ public class Main {
         Scanner console = new Scanner(System.in);
         System.out.println("Please input two prime numbers:");
 
-        PrivateKey pr = RSA.generatePrivateKey(console.nextInt(), console.nextInt());
-        PublicKey pub = RSA.exctractPublicKey(pr);
+        int p = console.nextInt();
+        int q = console.nextInt();
 
-        System.out.println(pr + "\n" + pub);
+        PrivateKey pr = RSA.generatePrivateKey(p, q);
+        PublicKey pub = RSA.extractPublicKey(pr);
+
+        System.out.println("p: " + p + ", q: " + q + ", phiN: " + RSA.calculatePhiN(p,q) + "\n" + pr + "\n" + pub);
 
         @Cleanup FileWriter pubFile = new FileWriter(args.pubPath),
                 prFile = new FileWriter(args.prPath);
@@ -53,15 +56,15 @@ public class Main {
                 generateKeys(args);
             else if (args.encrypt) {
 
-                // todo read keys
+                PublicKey pub = RSA.readPublicKeyFile(args.pubPath);
 
-                @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
                 @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
+                @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
 
                 int tmp;
                 do {
                     tmp = inputFile.read();
-                    //tmp = RSA.encrypt(pub, tmp);
+                    tmp = RSA.encrypt(pub, tmp);
                     outputFile.write(tmp);
                 } while (tmp != -1);
 
