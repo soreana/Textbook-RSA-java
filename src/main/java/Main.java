@@ -32,7 +32,7 @@ public class Main {
         PrivateKey pr = RSA.generatePrivateKey(p, q);
         PublicKey pub = RSA.extractPublicKey(pr);
 
-        System.out.println("p: " + p + ", q: " + q + ", phiN: " + RSA.calculatePhiN(p,q) + "\n" + pr + "\n" + pub);
+        System.out.println("p: " + p + ", q: " + q + ", phiN: " + RSA.calculatePhiN(p, q) + "\n" + pr + "\n" + pub);
 
         @Cleanup FileWriter pubFile = new FileWriter(args.pubPath),
                 prFile = new FileWriter(args.prPath);
@@ -42,6 +42,22 @@ public class Main {
 
         prFile.flush();
         pubFile.flush();
+    }
+
+    private static void encryptFile(Args args) throws IOException {
+        PublicKey pub = RSA.readPublicKeyFile(args.pubPath);
+
+        @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
+        @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
+
+        int tmp;
+        do {
+            tmp = inputFile.read();
+            tmp = RSA.encrypt(pub, tmp);
+            outputFile.write(tmp);
+        } while (tmp != -1);
+
+        outputFile.flush();
     }
 
     public static void main(String[] argv) {
@@ -54,23 +70,9 @@ public class Main {
         try {
             if (args.gen)
                 generateKeys(args);
-            else if (args.encrypt) {
-
-                PublicKey pub = RSA.readPublicKeyFile(args.pubPath);
-
-                @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
-                @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
-
-                int tmp;
-                do {
-                    tmp = inputFile.read();
-                    tmp = RSA.encrypt(pub, tmp);
-                    outputFile.write(tmp);
-                } while (tmp != -1);
-
-                outputFile.flush();
-
-            } else if (args.decrypt) {
+            else if (args.encrypt)
+                encryptFile(args);
+            else if (args.decrypt) {
                 // todo read keys
                 // todo decrypt
             }
