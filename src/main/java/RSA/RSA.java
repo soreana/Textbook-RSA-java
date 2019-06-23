@@ -6,13 +6,23 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
 
 public interface RSA {
 
-    static PrivateKey generatePrivateKey() {
-        return generatePrivateKey(/* todo generate random prime number*/);
+    static PrivateKey generatePrivateKey(int maxBits) {
+
+        Random r = new SecureRandom();
+
+        int p = randomPrime(maxBits, r);
+        int q = randomPrime(maxBits, r);
+
+        while (q == p && p * q < 256)
+            q = randomPrime(maxBits, r);
+
+        return generatePrivateKey(p, q);
     }
 
     static PrivateKey generatePrivateKey(int p, int q) {
@@ -27,7 +37,7 @@ public interface RSA {
     }
 
     static PublicKey extractPublicKey(PrivateKey pr) {
-        if (! pr.hasPublicKeyParameters())
+        if (!pr.hasPublicKeyParameters())
             throw new RuntimeException("Private key doesn't contain public key");
         return new PublicKeyImp(pr.getE(), pr.getN(), pr.getBlockSize());
     }
@@ -39,7 +49,7 @@ public interface RSA {
         int n = Integer.parseInt(br.readLine());
         int e = Integer.parseInt(Optional.ofNullable(br.readLine()).orElse("-1"));
 
-        return new PrivateKeyImp(d,n,e);
+        return new PrivateKeyImp(d, n, e);
     }
 
     static PublicKey readPublicKeyFile(String pubPath) throws IOException {
@@ -48,11 +58,11 @@ public interface RSA {
         int e = Integer.parseInt(br.readLine());
         int n = Integer.parseInt(br.readLine());
 
-        return new PublicKeyImp(e,n);
+        return new PublicKeyImp(e, n);
     }
 
     static int calculateE(int p, int q) {
-        Random r = new Random();
+        Random r = new SecureRandom();
         int phiN = calculatePhiN(p, q);
 
         int e, max = Math.max(p, q);
@@ -77,14 +87,27 @@ public interface RSA {
         return true;
     }
 
-    static void encrypt(PublicKey pub, int[] buff , int message) {
+    static int randomPrime(int maxBits, Random r) {
+        while (true) {
+            try {
+                int prime = BigInteger.probablePrime(maxBits, r).intValueExact();
+                if (isPrime(prime))
+                    return prime;
+            } catch (ArithmeticException e) {
+                if (!e.getMessage().equals("BigInteger out of int range"))
+                    throw e;
+            }
+        }
+    }
+
+    static void encrypt(PublicKey pub, int[] buff, int message) {
 
         BigInteger base = BigInteger.valueOf(message);
 
         BigInteger decrypt = base.pow(pub.getE())
                 .mod(BigInteger.valueOf(pub.getN()));
 
-        for (int i = 0; i <  pub.getBlockSize() ; i++) {
+        for (int i = 0; i < pub.getBlockSize(); i++) {
             buff[i] = decrypt.mod(BigInteger.valueOf(256)).intValue();
             decrypt = decrypt.divide(BigInteger.valueOf(256));
         }
@@ -95,13 +118,10 @@ public interface RSA {
         return n / 256 + 1;
     }
 
-    static int calculateD(int p, int q) {
-        // todo refactor this method and calculate e modeInverse rather than using BigInteger.modInverse method
-        BigInteger phiN = BigInteger.valueOf(calculatePhiN(p, q));
-        // todo bug each execution of this method could result in diffrent E
-        BigInteger e = BigInteger.valueOf(calculateE(p, q));
+    static int calculateD(int phiN, int e) {
+        // todo re-implement this method and calculate e modeInverse rather than using BigInteger.modInverse method
 
-        return e.modInverse(phiN).intValue();
+        return BigInteger.valueOf(e).modInverse(BigInteger.valueOf(phiN)).intValue();
     }
 
 }

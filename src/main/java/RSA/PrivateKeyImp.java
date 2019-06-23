@@ -9,9 +9,9 @@ public class PrivateKeyImp implements PrivateKey {
     private final int BLOCK_SIZE;
 
     public PrivateKeyImp(int p, int q) {
-        this.d = RSA.calculateD(p, q);
-        this.n = p * q;
         this.e = RSA.calculateE(p, q);
+        this.d = RSA.calculateD(RSA.calculatePhiN(p,q), this.e);
+        this.n = p * q;
         this.BLOCK_SIZE = RSA.blockSize(this.n);
     }
 
@@ -24,7 +24,7 @@ public class PrivateKeyImp implements PrivateKey {
 
     @Override
     public String toString() {
-        return String.format("Private key parameters are:\nd: %d,n: %d, e: %d\nBlock size is %d", d, n, e, BLOCK_SIZE);
+        return String.format("Private key parameters are:\nd: %d, n: %d, e: %d\nBlock size is %d", d, n, e, BLOCK_SIZE);
     }
 
     @Override
