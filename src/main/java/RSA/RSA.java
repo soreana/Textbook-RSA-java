@@ -77,9 +77,11 @@ public interface RSA {
         return true;
     }
 
-    static int encrypt(PublicKey pub, int tmp) {
+    static void encrypt(PublicKey pub, int[] buff , int tmp) {
         // todo implement this method
-        return tmp;
+
+        for (int i = 0; i <  pub.getBlockSize() ; i++)
+            buff[i] = tmp + i;
     }
 
     static int blockSize(int n) {
