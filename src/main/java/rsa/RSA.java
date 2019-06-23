@@ -2,9 +2,7 @@ package rsa;
 
 import lombok.Cleanup;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Optional;
@@ -100,6 +98,16 @@ public interface RSA {
         }
     }
 
+    static int blockSize(int n) {
+        return n / 256 + 1;
+    }
+
+    static int calculateD(int phiN, int e) {
+        // todo re-implement this method and calculate e modeInverse rather than using BigInteger.modInverse method
+
+        return BigInteger.valueOf(e).modInverse(BigInteger.valueOf(phiN)).intValue();
+    }
+
     static void encrypt(PublicKey pub, int[] buff, int message) {
 
         BigInteger base = BigInteger.valueOf(message);
@@ -116,27 +124,82 @@ public interface RSA {
 
     static int decrypt(PrivateKey pr, int[] buff) {
 
-        int maxIndex = pr.getBlockSize() -1;
+        int maxIndex = pr.getBlockSize() - 1;
 
         BigInteger base = BigInteger.valueOf(buff[maxIndex]);
 
-        for (int i = maxIndex -1; i >= 0; i--)
+        for (int i = maxIndex - 1; i >= 0; i--)
             base = base.multiply(BigInteger.valueOf(256)).add(BigInteger.valueOf(buff[i]));
-
-        System.out.println(base);
 
         return base.pow(pr.getD())
                 .mod(BigInteger.valueOf(pr.getN()))
                 .intValue();
     }
 
-    static int blockSize(int n) {
-        return n / 256 + 1;
+    static void encryptFile(PublicKey pub, String inputFilePath, String outputFilePath, boolean debug) throws IOException {
+        @Cleanup FileReader inputFile = new FileReader(inputFilePath);
+        @Cleanup FileWriter outputFile = new FileWriter(outputFilePath);
+
+        int[] buff = new int[pub.getBlockSize()];
+        int input;
+
+        do {
+            input = inputFile.read();
+
+            if (input != -1) {
+                RSA.encrypt(pub, buff, input);
+
+                if (debug) // todo clear this shit
+                    System.out.println(input);
+
+                if (debug) // todo clear this shit
+                    System.out.print("buffer: ");
+
+                for (int i = 0; i < pub.getBlockSize(); i++) {
+                    if (debug) // todo clear this shit
+                        System.out.print(buff[i] + " ");
+                    outputFile.write(buff[i]);
+                }
+
+                if (debug) // todo clear this shit
+                    System.out.println();
+            }
+        } while (input != -1);
+
+        outputFile.flush();
     }
 
-    static int calculateD(int phiN, int e) {
-        // todo re-implement this method and calculate e modeInverse rather than using BigInteger.modInverse method
+    static void decryptFile(PrivateKey pr, String inputFilePath, String outputFilePath, boolean debug) throws IOException {
+        @Cleanup FileReader inputFile = new FileReader(inputFilePath);
+        @Cleanup FileWriter outputFile = new FileWriter(outputFilePath);
 
-        return BigInteger.valueOf(e).modInverse(BigInteger.valueOf(phiN)).intValue();
+        int[] buff = new int[pr.getBlockSize()];
+        int origin;
+        int blockSize = pr.getBlockSize();
+
+        do {
+
+            if (debug) // todo clear this shit
+                System.out.print("buffer: ");
+
+            for (int i = 0; i < blockSize; i++) {
+                buff[i] = inputFile.read();
+                if (debug) // todo clear this shit
+                    System.out.print(buff[i] + " ");
+            }
+
+            if (debug) // todo clear this shit
+                System.out.println();
+
+            if (buff[blockSize - 1] != -1) {
+                origin = RSA.decrypt(pr, buff);
+                if (debug) // todo clear this shit
+                    System.out.println(origin);
+                outputFile.write(origin);
+            }
+
+        } while (buff[blockSize - 1] != -1);
+
+        outputFile.flush();
     }
 }
