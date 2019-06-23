@@ -114,6 +114,11 @@ public interface RSA {
 
     }
 
+    static int decrypt(PrivateKey pr, int[] buff) {
+        // todo implement this method
+        return 0;
+    }
+
     static int blockSize(int n) {
         return n / 256 + 1;
     }
@@ -123,5 +128,4 @@ public interface RSA {
 
         return BigInteger.valueOf(e).modInverse(BigInteger.valueOf(phiN)).intValue();
     }
-
 }

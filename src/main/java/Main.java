@@ -50,7 +50,7 @@ public class Main {
         @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
         @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
 
-        int[] buff = new int[pub.getBlockSize() + 1];
+        int[] buff = new int[pub.getBlockSize()];
         int input;
 
         do {
@@ -71,6 +71,29 @@ public class Main {
         outputFile.flush();
     }
 
+    private static void decryptFile(Args args) throws IOException {
+        PrivateKey pr = RSA.readPrivateKeyFile(args.prPath);
+
+        @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
+        @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
+
+        int[] buff = new int[pr.getBlockSize()];
+        int origin ;
+        int blockSize = pr.getBlockSize();
+
+        do {
+
+            for (int i = 0; i < blockSize; i++)
+                buff[i] = inputFile.read();
+
+            if (buff[blockSize - 1] != -1) {
+                origin = RSA.decrypt(pr, buff);
+                outputFile.write(origin);
+            }
+
+        } while (buff[blockSize - 1] != -1);
+    }
+
     public static void main(String[] argv) {
 
         Args args = parsArgs(argv);
@@ -79,14 +102,14 @@ public class Main {
             System.out.println(args);
 
         try {
+
             if (args.gen)
                 generateKeys(args);
             else if (args.encrypt)
                 encryptFile(args);
-            else if (args.decrypt) {
-                // todo read keys
-                // todo decrypt
-            }
+            else if (args.decrypt)
+                decryptFile(args);
+
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
