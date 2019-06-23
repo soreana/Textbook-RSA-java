@@ -1,4 +1,4 @@
-package RSA;
+package rsa;
 
 public interface PrivateKey {
 

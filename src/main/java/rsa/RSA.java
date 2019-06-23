@@ -1,4 +1,4 @@
-package RSA;
+package rsa;
 
 import lombok.Cleanup;
 

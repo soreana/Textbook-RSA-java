@@ -1,6 +1,6 @@
-import RSA.RSA;
-import RSA.PrivateKey;
-import RSA.PublicKey;
+import rsa.RSA;
+import rsa.PrivateKey;
+import rsa.PublicKey;
 import com.beust.jcommander.JCommander;
 import lombok.Cleanup;
 
