@@ -50,16 +50,23 @@ public class Main {
         @Cleanup FileReader inputFile = new FileReader(args.inputFilePath);
         @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
 
-        int[] tmp = new int[5];
+        int[] buff = new int[pub.getBlockSize() + 1];
+        int input;
 
         do {
-            tmp[0] = inputFile.read();
-            RSA.encrypt(pub, tmp, tmp[0]);
+            input = inputFile.read();
+            RSA.encrypt(pub, buff, input);
 
-            for (int i = 0; i < pub.getBlockSize(); i++)
-                outputFile.write(tmp[i]);
+            if (args.debug) // todo clear this shit
+                System.out.println(input);
 
-        } while (tmp[0] != -1);
+            for (int i = 0; i < pub.getBlockSize(); i++) {
+                if (args.debug) // todo clear this shit
+                    System.out.println(buff[i]);
+                outputFile.write(buff[i]);
+            }
+
+        } while (input != -1);
 
         outputFile.flush();
     }

@@ -77,11 +77,18 @@ public interface RSA {
         return true;
     }
 
-    static void encrypt(PublicKey pub, int[] buff , int tmp) {
-        // todo implement this method
+    static void encrypt(PublicKey pub, int[] buff , int message) {
 
-        for (int i = 0; i <  pub.getBlockSize() ; i++)
-            buff[i] = tmp + i;
+        BigInteger base = BigInteger.valueOf(message);
+
+        BigInteger decrypt = base.pow(pub.getE())
+                .mod(BigInteger.valueOf(pub.getN()));
+
+        for (int i = 0; i <  pub.getBlockSize() ; i++) {
+            buff[i] = decrypt.mod(BigInteger.valueOf(256)).intValue();
+            decrypt = decrypt.divide(BigInteger.valueOf(256));
+        }
+
     }
 
     static int blockSize(int n) {
@@ -91,6 +98,7 @@ public interface RSA {
     static int calculateD(int p, int q) {
         // todo refactor this method and calculate e modeInverse rather than using BigInteger.modInverse method
         BigInteger phiN = BigInteger.valueOf(calculatePhiN(p, q));
+        // todo bug each execution of this method could result in diffrent E
         BigInteger e = BigInteger.valueOf(calculateE(p, q));
 
         return e.modInverse(phiN).intValue();
