@@ -83,15 +83,24 @@ public class Main {
 
         do {
 
-            for (int i = 0; i < blockSize; i++)
+            System.out.print("buffer: ");
+
+            for (int i = 0; i < blockSize; i++) {
                 buff[i] = inputFile.read();
+                System.out.print(buff[i] + " ");
+            }
+
+            System.out.println();
 
             if (buff[blockSize - 1] != -1) {
                 origin = RSA.decrypt(pr, buff);
+                System.out.println(origin);
                 outputFile.write(origin);
             }
 
         } while (buff[blockSize - 1] != -1);
+
+        outputFile.flush();
     }
 
     public static void main(String[] argv) {

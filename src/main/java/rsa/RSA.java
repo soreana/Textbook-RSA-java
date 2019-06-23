@@ -104,19 +104,30 @@ public interface RSA {
 
         BigInteger base = BigInteger.valueOf(message);
 
-        BigInteger decrypt = base.pow(pub.getE())
+        BigInteger encrypt = base.pow(pub.getE())
                 .mod(BigInteger.valueOf(pub.getN()));
 
         for (int i = 0; i < pub.getBlockSize(); i++) {
-            buff[i] = decrypt.mod(BigInteger.valueOf(256)).intValue();
-            decrypt = decrypt.divide(BigInteger.valueOf(256));
+            buff[i] = encrypt.mod(BigInteger.valueOf(256)).intValue();
+            encrypt = encrypt.divide(BigInteger.valueOf(256));
         }
 
     }
 
     static int decrypt(PrivateKey pr, int[] buff) {
-        // todo implement this method
-        return 0;
+
+        int maxIndex = pr.getBlockSize() -1;
+
+        BigInteger base = BigInteger.valueOf(buff[maxIndex]);
+
+        for (int i = maxIndex -1; i >= 0; i--)
+            base = base.multiply(BigInteger.valueOf(256)).add(BigInteger.valueOf(buff[i]));
+
+        System.out.println(base);
+
+        return base.pow(pr.getD())
+                .mod(BigInteger.valueOf(pr.getN()))
+                .intValue();
     }
 
     static int blockSize(int n) {
