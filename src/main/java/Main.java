@@ -55,17 +55,22 @@ public class Main {
 
         do {
             input = inputFile.read();
-            RSA.encrypt(pub, buff, input);
 
-            if (args.debug) // todo clear this shit
-                System.out.println(input);
+            if (input != -1) {
+                RSA.encrypt(pub, buff, input);
 
-            for (int i = 0; i < pub.getBlockSize(); i++) {
                 if (args.debug) // todo clear this shit
-                    System.out.println(buff[i]);
-                outputFile.write(buff[i]);
-            }
+                    System.out.println(input);
 
+                if (args.debug) // todo clear this shit
+                    System.out.print("buffer: ");
+
+                for (int i = 0; i < pub.getBlockSize(); i++) {
+                    if (args.debug) // todo clear this shit
+                        System.out.print(buff[i] + " ");
+                    outputFile.write(buff[i]);
+                }
+            }
         } while (input != -1);
 
         outputFile.flush();
@@ -78,23 +83,27 @@ public class Main {
         @Cleanup FileWriter outputFile = new FileWriter(args.outputFilePath);
 
         int[] buff = new int[pr.getBlockSize()];
-        int origin ;
+        int origin;
         int blockSize = pr.getBlockSize();
 
         do {
 
-            System.out.print("buffer: ");
+            if (args.debug) // todo clear this shit
+                System.out.print("buffer: ");
 
             for (int i = 0; i < blockSize; i++) {
                 buff[i] = inputFile.read();
-                System.out.print(buff[i] + " ");
+                if (args.debug) // todo clear this shit
+                    System.out.print(buff[i] + " ");
             }
 
-            System.out.println();
+            if (args.debug) // todo clear this shit
+                System.out.println();
 
             if (buff[blockSize - 1] != -1) {
                 origin = RSA.decrypt(pr, buff);
-                System.out.println(origin);
+                if (args.debug) // todo clear this shit
+                    System.out.println(origin);
                 outputFile.write(origin);
             }
 
