@@ -59,10 +59,10 @@ public class Main {
                 generateKeys(args);
             else if (args.encrypt) {
                 PublicKey pub = RSA.readPublicKeyFile(args.pubPath);
-                RSA.encryptFile(pub, args.inputFilePath, args.outputFilePath, args.debug);
+                RSA.encryptFile(pub, args.inputFilePath, args.outputFilePath);
             } else if (args.decrypt) {
                 PrivateKey pr = RSA.readPrivateKeyFile(args.prPath);
-                RSA.decryptFile(pr, args.inputFilePath, args.outputFilePath, args.debug);
+                RSA.decryptFile(pr, args.inputFilePath, args.outputFilePath);
             }
 
         } catch (RuntimeException e) {

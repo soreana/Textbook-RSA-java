@@ -24,8 +24,4 @@ public class Args {
 
     @Parameter(names = "--dec", description = "Encryption mode")
     public boolean decrypt = false;
-
-    @Parameter(names = "--debug", description = "Debug mode")
-    public boolean debug = false;
-
 }

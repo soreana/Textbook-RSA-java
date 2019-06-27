@@ -140,7 +140,7 @@ public interface RSA {
                 .intValue();
     }
 
-    static void encryptFile(PublicKey pub, String inputFilePath, String outputFilePath, boolean debug) throws IOException {
+    static void encryptFile(PublicKey pub, String inputFilePath, String outputFilePath) throws IOException {
         @Cleanup FileReader inputFile = new FileReader(inputFilePath);
         @Cleanup FileWriter outputFile = new FileWriter(outputFilePath);
 
@@ -165,7 +165,7 @@ public interface RSA {
         outputFile.flush();
     }
 
-    static void decryptFile(PrivateKey pr, String inputFilePath, String outputFilePath, boolean debug) throws IOException {
+    static void decryptFile(PrivateKey pr, String inputFilePath, String outputFilePath) throws IOException {
         @Cleanup FileReader inputFile = new FileReader(inputFilePath);
         @Cleanup FileWriter outputFile = new FileWriter(outputFilePath);
 
