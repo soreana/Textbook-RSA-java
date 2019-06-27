@@ -1,3 +1,4 @@
+import org.apache.logging.log4j.Logger;
 import rsa.RSA;
 import rsa.PrivateKey;
 import rsa.PublicKey;
@@ -8,7 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+
 public class Main {
+    private static Logger log = LogManager.getLogger(Main.class);
 
     private static Args parsArgs(String[] argv) {
         Args args = new Args();
@@ -47,8 +51,7 @@ public class Main {
 
         Args args = parsArgs(argv);
 
-        if (args.debug) // todo clear this shit
-            System.out.println(args);
+        log.debug(()-> args);
 
         try {
 

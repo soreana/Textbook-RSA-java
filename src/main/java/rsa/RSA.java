@@ -1,14 +1,18 @@
 package rsa;
 
 import lombok.Cleanup;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
 public interface RSA {
+    Logger log = LogManager.getLogger(RSA.class);
 
     static PrivateKey generatePrivateKey(int maxBits) {
 
@@ -149,20 +153,12 @@ public interface RSA {
             if (input != -1) {
                 RSA.encrypt(pub, buff, input);
 
-                if (debug) // todo clear this shit
-                    System.out.println(input);
+                log.debug("Inputed character is :" + input);
 
-                if (debug) // todo clear this shit
-                    System.out.print("buffer: ");
+                log.debug(() -> "buffer: " + Arrays.toString(buff));
 
-                for (int i = 0; i < pub.getBlockSize(); i++) {
-                    if (debug) // todo clear this shit
-                        System.out.print(buff[i] + " ");
+                for (int i = 0; i < pub.getBlockSize(); i++)
                     outputFile.write(buff[i]);
-                }
-
-                if (debug) // todo clear this shit
-                    System.out.println();
             }
         } while (input != -1);
 
@@ -179,22 +175,14 @@ public interface RSA {
 
         do {
 
-            if (debug) // todo clear this shit
-                System.out.print("buffer: ");
+            log.debug(() -> "buffer: " + Arrays.toString(buff));
 
-            for (int i = 0; i < blockSize; i++) {
+            for (int i = 0; i < blockSize; i++)
                 buff[i] = inputFile.read();
-                if (debug) // todo clear this shit
-                    System.out.print(buff[i] + " ");
-            }
-
-            if (debug) // todo clear this shit
-                System.out.println();
 
             if (buff[blockSize - 1] != -1) {
                 origin = RSA.decrypt(pr, buff);
-                if (debug) // todo clear this shit
-                    System.out.println(origin);
+                log.debug("Original message was: " + origin);
                 outputFile.write(origin);
             }
 
