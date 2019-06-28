@@ -7,5 +7,10 @@ public interface PrivateKey {
     int getD();
     int getBlockSize();
 
+    /**
+     *
+     * @return true if private key can used to generate public key
+     */
+
     boolean hasPublicKeyParameters();
 }
