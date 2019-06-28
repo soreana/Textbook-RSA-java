@@ -63,7 +63,8 @@ public class Main {
             } else if (args.decrypt) {
                 PrivateKey pr = RSA.readPrivateKeyFile(args.prPath);
                 RSA.decryptFile(pr, args.inputFilePath, args.outputFilePath);
-            }
+            } else
+                log.warn("Nothing Done. Please provide some arguments.");
 
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
